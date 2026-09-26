@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1c0d12" />
+  <title>Happy Birthday, Jiya</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- shared SVG defs: rose-gold foil gradient used by SVG text and shapes -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="foil" x1="0" y1="0" x2="1440" y2="0" gradientUnits="userSpaceOnUse" spreadMethod="repeat">
+        <stop offset="0" stop-color="#9a5663" />
+        <stop offset="0.22" stop-color="#e4a896" />
+        <stop offset="0.36" stop-color="#fff0e6" />
+        <stop offset="0.5" stop-color="#d18e82" />
+        <stop offset="0.72" stop-color="#b76e79" />
+        <stop offset="0.86" stop-color="#f2c2b3" />
+        <stop offset="1" stop-color="#9a5663" />
+        <animateTransform attributeName="gradientTransform" type="translate" from="0 0" to="1440 0" dur="7s" repeatCount="indefinite" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- ambient layers -->
+  <div id="gradient" aria-hidden="true"></div>
+  <div class="glow" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="fireworks" aria-hidden="true"></div>
+  <div id="petals" aria-hidden="true"></div>
+  <div id="hearts" aria-hidden="true"></div>
+  <div id="sparkles" aria-hidden="true"></div>
+
+  <div class="top-bar">
+    <div class="now-playing" id="nowPlaying" hidden>
+      <span class="np-disc" aria-hidden="true"></span>
+      <span class="np-text"><span id="npTitle"></span></span>
+    </div>
+    <button class="sound-btn" id="soundBtn" aria-pressed="true" aria-label="Music on. Tap to mute">
+      <svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+      <svg class="off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>
+    </button>
+  </div>
+
+  <!-- 1. Intro: firework letters that turn into balloons -->
+  <section class="scene show" id="intro" aria-label="Intro">
+    <canvas id="c" aria-hidden="true"></canvas>
+    <h1 class="intro-static foil-text" id="introStatic">Happy Birthday, Jiya</h1>
+    <div id="start-btn-container">
+      <button id="start-btn"><span class="btn-text">Open your surprise</span></button>
+    </div>
+  </section>
+
+  <!-- 2. Celebrate -->
+  <main class="scene" id="stage" aria-label="Celebrate">
+    <div class="curved-loop" id="curvedLoop" aria-label="Happiest Birthday Jiya" role="img">
+      <svg class="curved-loop-svg" viewBox="0 0 1440 120" aria-hidden="true">
+        <text class="cl-measure" xml:space="preserve"></text>
+        <defs><path id="curvePath" d="M-100,40 Q500,300 1540,40" fill="none" /></defs>
+        <text class="cl-text" xml:space="preserve"><textPath href="#curvePath" startOffset="0" xml:space="preserve"></textPath></text>
+      </svg>
+    </div>
+    <p class="top-msg" aria-live="polite"><span class="tw"></span><span class="caret" aria-hidden="true"></span></p>
+    <button class="btn" id="openBtn" data-text="Let's celebrate"><span class="label">Let's celebrate</span></button>
+  </main>
+
+  <!-- Letter: sealed envelope → letter card -->
+  <div id="fancyOverlay" class="fancy-overlay" aria-hidden="true">
+    <div class="envelope-stage" id="envelopeStage">
+      <button class="envelope" id="envelope" aria-label="Break the seal and open the letter">
+        <span class="env-back" aria-hidden="true"></span>
+        <span class="env-paper" aria-hidden="true"><span class="env-paper-line"></span><span class="env-paper-line"></span><span class="env-paper-line short"></span></span>
+        <span class="env-front" aria-hidden="true"></span>
+        <span class="env-flap" aria-hidden="true"></span>
+        <span class="seal" aria-hidden="true"><span>J</span></span>
+      </button>
+      <p class="env-hint">Tap the seal to open</p>
+    </div>
+
+    <div class="modal-shell" id="fancyModal" role="dialog" aria-modal="true" aria-labelledby="fancyTitle">
+      <div class="ring" aria-hidden="true"></div>
+      <div class="fancy-modal">
+        <button id="fancyClose" class="fancy-close" aria-label="Close letter">&times;</button>
+        <h2 id="fancyTitle" class="fancy-title foil-text">For you, Jiya</h2>
+        <p class="fancy-sub">Made with love, just for you.</p>
+        <div class="fancy-body"><p id="fancyType" class="tw-modal"></p></div>
+        <div class="fancy-footer" aria-hidden="true"><span class="dot a"></span><span class="dot b"></span><span class="dot c"></span></div>
+        <div class="modal-actions"><button class="Gbtn" id="galleryBtn">See our moments</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Photo cube -->
+  <section class="scene" id="gallery" aria-label="Our moments">
+    <h2 class="scene-title foil-text">Our moments</h2>
+    <p class="scene-hint">Swipe or use the arrows to turn it. Tap a photo to see it full size.</p>
+    <div class="gallery-stage">
+      <div id="cube" class="cube" tabindex="0" aria-roledescription="carousel" aria-label="Photo cube">
+        <figure class="face face1"><span class="face-blur"></span><img alt="" draggable="false" /><figcaption></figcaption></figure>
+        <figure class="face face2"><span class="face-blur"></span><img alt="" draggable="false" /><figcaption></figcaption></figure>
+        <figure class="face face3"><span class="face-blur"></span><img alt="" draggable="false" /><figcaption></figcaption></figure>
+        <figure class="face face4"><span class="face-blur"></span><img alt="" draggable="false" /><figcaption></figcaption></figure>
+      </div>
+    </div>
+    <div class="gallery-ui">
+      <button class="nav-btn" id="prevImg" aria-label="Previous photo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div class="pips" aria-hidden="true"><span class="pip on"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span></div>
+      <button class="nav-btn" id="nextImg" aria-label="Next photo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>
+    <button class="Lbtn" id="toBest"><span class="btn-inner">Our best moment</span></button>
+  </section>
+
+  <!-- Full-size photo viewer -->
+  <div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-label="Photo">
+    <img id="lightboxImg" alt="" />
+    <p class="lightbox-cap" id="lightboxCap"></p>
+    <button class="fancy-close lightbox-close" id="lightboxClose" aria-label="Close photo">&times;</button>
+  </div>
+
+  <!-- 4. Spotlight: the best moment -->
+  <section class="scene" id="best" aria-label="The best moment">
+    <div class="spotlight" aria-hidden="true"></div>
+    <figure class="best-frame" id="bestFrame">
+      <div class="best-photo"><img id="bestImg" alt="" /></div>
+      <figcaption class="best-tag" id="bestTag"></figcaption>
+    </figure>
+    <blockquote class="best-quote" id="bestQuote"></blockquote>
+    <button class="Lbtn" id="toVideos"><span class="btn-inner">Play our videos</span></button>
+  </section>
+
+  <!-- 5. Videos -->
+  <section class="scene" id="videos" aria-label="Our videos">
+    <h2 class="scene-title foil-text">Little moving memories</h2>
+    <p class="scene-hint">Tap a video to play it with sound.</p>
+    <div class="reels">
+      <figure class="reel">
+        <button class="phone" aria-label="Play first video">
+          <video src="assets/video/clip1.mp4" poster="assets/video/clip1.jpg" playsinline preload="metadata"></video>
+          <span class="play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg></span>
+        </button>
+        <figcaption></figcaption>
+      </figure>
+      <figure class="reel">
+        <button class="phone landscape" aria-label="Play second video">
+          <video src="assets/video/clip2.mp4" poster="assets/video/clip2.jpg" playsinline preload="metadata"></video>
+          <span class="play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg></span>
+        </button>
+        <figcaption></figcaption>
+      </figure>
+    </div>
+    <button class="Lbtn" id="toScratch"><span class="btn-inner">One more surprise</span></button>
+  </section>
+
+  <!-- 6. Scratch card -->
+  <section class="scene" id="scratch" aria-label="A surprise to scratch">
+    <h2 class="scene-title foil-text">Scratch to reveal</h2>
+    <p class="scene-hint">Rub the card with your finger.</p>
+    <div class="ticket" id="ticket">
+      <div class="ticket-inner">
+        <p class="ticket-title" id="ticketTitle"></p>
+        <p class="ticket-reveal" id="ticketReveal"></p>
+        <p class="ticket-fine" id="ticketFine"></p>
+      </div>
+      <canvas class="scratch-canvas" id="scratchCanvas" aria-label="Scratch area" role="img"></canvas>
+    </div>
+    <button class="Lbtn" id="toFinale"><span class="btn-inner">Read the last note</span></button>
+  </section>
+
+  <!-- 7. Finale -->
+  <section class="scene" id="finale" aria-label="Final message">
+    <div class="cake-wrap" id="cakeWrap" role="button" tabindex="0" aria-label="Birthday cake with three lit candles. Tap to blow them out.">
+      <svg class="cake" viewBox="0 0 300 250" aria-hidden="true">
+        <defs>
+          <linearGradient id="flameGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#fff8ea" />
+            <stop offset="0.45" stop-color="#ffd9a0" />
+            <stop offset="1" stop-color="#f08a5d" />
+          </linearGradient>
+          <linearGradient id="tierLow" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#f6c1bc" />
+            <stop offset="1" stop-color="#c98579" />
+          </linearGradient>
+          <linearGradient id="tierTop" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#b76e79" />
+            <stop offset="0.35" stop-color="#f2c2b3" />
+            <stop offset="0.6" stop-color="#e3a99a" />
+            <stop offset="1" stop-color="#9a5663" />
+          </linearGradient>
+          <pattern id="stripe" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(35)">
+            <rect width="8" height="8" fill="#fff4ee" />
+            <rect width="4" height="8" fill="#b76e79" />
+          </pattern>
+        </defs>
+        <ellipse cx="150" cy="232" rx="134" ry="13" fill="#f8e3d8" opacity="0.9" />
+        <ellipse cx="150" cy="229" rx="118" ry="8" fill="#e3c3b6" />
+        <rect x="40" y="148" width="220" height="82" rx="12" fill="url(#tierLow)" />
+        <path d="M40 160 a12 12 0 0 1 12 -12 h196 a12 12 0 0 1 12 12 v6
+                 c-6 0 -8 4 -8 10 s-6 6 -8 0 c0 -6 -4 -8 -10 -8 h-18 c-6 0 -6 6 -6 14 s-8 8 -8 0 c0 -8 -2 -14 -10 -14 h-30
+                 c-6 0 -6 4 -6 9 s-8 6 -8 0 c0 -6 -2 -9 -8 -9 h-34 c-6 0 -6 6 -6 16 s-8 8 -8 0 c0 -10 -2 -16 -8 -16 h-22
+                 c-6 0 -6 4 -6 8 s-8 5 -8 0 c0 -5 -3 -8 -8 -8 z" fill="#fff4ee" />
+        <g fill="#b76e79"><circle cx="70" cy="200" r="3" /><circle cx="112" cy="212" r="3" /><circle cx="150" cy="198" r="3" /><circle cx="190" cy="214" r="3" /><circle cx="232" cy="200" r="3" /></g>
+        <g fill="#fff4ee" opacity="0.85"><circle cx="90" cy="215" r="2" /><circle cx="170" cy="210" r="2" /><circle cx="212" cy="190" r="2" /><circle cx="130" cy="190" r="2" /></g>
+        <rect x="78" y="92" width="144" height="60" rx="10" fill="url(#tierTop)" />
+        <path d="M78 102 a10 10 0 0 1 10 -10 h124 a10 10 0 0 1 10 10 v4
+                 c-5 0 -6 3 -6 8 s-7 5 -7 0 c0 -5 -3 -8 -8 -8 h-20 c-5 0 -5 5 -5 11 s-7 6 -7 0 c0 -6 -2 -11 -8 -11 h-26
+                 c-5 0 -5 3 -5 7 s-7 5 -7 0 c0 -4 -2 -7 -7 -7 h-24 c-5 0 -5 5 -5 10 s-7 6 -7 0 c0 -6 -2 -10 -7 -10 z" fill="#fff4ee" />
+        <text x="150" y="140" text-anchor="middle" font-family="Caveat, cursive" font-weight="700" font-size="22" fill="#fff4ee">Jiya</text>
+        <rect x="112" y="52" width="10" height="42" rx="3" fill="url(#stripe)" />
+        <rect x="145" y="44" width="10" height="50" rx="3" fill="url(#stripe)" />
+        <rect x="178" y="52" width="10" height="42" rx="3" fill="url(#stripe)" />
+        <g stroke="#3a1a10" stroke-width="1.6" stroke-linecap="round"><line x1="117" y1="52" x2="117" y2="46" /><line x1="150" y1="44" x2="150" y2="38" /><line x1="183" y1="52" x2="183" y2="46" /></g>
+        <g class="flames">
+          <path class="flame" d="M117 20 C124 31 126 39 117 47 C108 39 110 31 117 20 Z" fill="url(#flameGrad)" />
+          <path class="flame" d="M150 12 C157 23 159 31 150 39 C141 31 143 23 150 12 Z" fill="url(#flameGrad)" />
+          <path class="flame" d="M183 20 C190 31 192 39 183 47 C174 39 176 31 183 20 Z" fill="url(#flameGrad)" />
+        </g>
+        <g fill="none" stroke="#fff4ee" stroke-width="2" stroke-linecap="round" opacity="0.8">
+          <path class="smoke" d="M117 44 c-4 -6 4 -10 0 -16 s4 -10 0 -14" />
+          <path class="smoke" d="M150 36 c-4 -6 4 -10 0 -16 s4 -10 0 -14" />
+          <path class="smoke" d="M183 44 c-4 -6 4 -10 0 -16 s4 -10 0 -14" />
+        </g>
+      </svg>
+    </div>
+
+    <div class="typewriter"><span id="text" class="foil-text"></span></div>
+    <p class="wish-note" id="wishNote" aria-live="polite"></p>
+    <div class="finale-actions">
+      <button class="Lbtn" id="wishBtn"><span class="btn-inner">Make a wish, then blow</span></button>
+    </div>
+
+    <div class="bday-unique">
+      <p id="finalMsg"></p>
+      <p class="signoff" id="signoff"></p>
+    </div>
+
+    <div class="song-card" id="songCard">
+      <div class="vinyl" aria-hidden="true"><span class="vinyl-label">J</span></div>
+      <div class="song-meta">
+        <p class="song-kicker">Our song</p>
+        <p class="song-title" id="songTitle"></p>
+        <p class="song-artist" id="songArtist"></p>
+      </div>
+      <div class="spotify-slot" id="spotifySlot"></div>
+    </div>
+
+    <button class="text-btn" id="replayBtn">Watch it all again</button>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.10.7/dist/index.umd.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/intro.js"></script>
+  <script src="js/music.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
